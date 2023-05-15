@@ -1,0 +1,214 @@
+# import required libraries for dataframe and visualization
+import numpy as np # linear algebra
+from sklearn.cluster import KMeans
+import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv)
+from sklearn.preprocessing import MinMaxScaler
+from matplotlib import pyplot as plt
+%matplotlib inline
+import matplotlib.pyplot as plt # for data visualization
+from sklearn.metrics import silhouette_score
+# TODO:: load your .csv dataset into a dataframe
+df = pd.read_csv("MLProject/dice_com-job_us_sample2.csv")
+# Drop the three empty columns from the data 
+df.drop(['advertiserurl', 'company', 'employmenttype_jobstatus', 'jobid', 'postdate', 'shift', 'site_name', 
+'skills', 'uniq_id'], axis=1, inplace=True)
+# TODO:: Check the summary again to see if there are any redundant columns remaining
+df.info()
+# Inspect statistical information about the data set 
+print(df.describe())
+# TODO::Get the categorical variable you want to generate a pie chart for
+titles = df['jobtitle']
+descriptions = df['jobdescription']
+locations = df['joblocation_address']
+#TODO:: write code to view how many different types of labels there are in song
+n = df.shape[0]
+print(n)
+# TODO::List the set of unique values for this variable
+# print(titles.unique())
+# print(descriptions.unique())
+# print(locations.unique())
+array = df['jobtitle'].astype(str).to_numpy()
+# Create an array of zeroes where each element correspond to the
+# number of jobs asking for that element skills
+# the elements of the array refer to SQL, Java, Python, Linux, JavaScript
+# AWS, C++, C, C#, .NET, Oracle, HTML, Scrum, Git, CSS, ML, Azure, Unix, SQL server,
+# Docker
+skills = np.zeros(20)
+# Store the number of repeatition of each skill in the database and that is going to
+# present the wieght of the skills. Since it was repeated many times it means it must have
+# higher wieght
+for x in array:
+ if x.lower().find('sql') != -1:
+ skills[0] += 1
+ if x.lower().find('java') != -1:
+ skills[1] += 1
+ if x.lower().find('python') != -1:
+ skills[2] += 1
+ if x.lower().find('linux') != -1:
+ skills[3] += 1
+ if x.lower().find('javascript') != -1:
+ skills[4] += 1
+ if x.lower().find('aws') != -1:
+ skills[5] += 1
+ if x.lower().find('c++') != -1:
+ skills[6] += 1
+ if x.lower().find('c') != -1:
+ skills[7] += 1
+ if x.lower().find('c#') != -1:
+ skills[8] += 1
+ if x.lower().find('.net') != -1:
+ skills[9] += 1
+ if x.lower().find('oracle') != -1:
+ skills[10] += 1
+ if x.lower().find('html') != -1:
+ skills[11] += 1
+ if x.lower().find('scrum') != -1:
+ skills[12] += 1
+ if x.lower().find('git') != -1:
+ skills[13] += 1
+ if x.lower().find('css') != -1:
+ skills[14] += 1
+ if x.lower().find('machine learning') != -1:
+ skills[15] += 1
+ if x.lower().find('azure') != -1:
+ skills[16] += 1
+ if x.lower().find('unix') != -1:
+ skills[17] += 1
+ if x.lower().find('sql server') != -1:
+ skills[18] += 1
+ if x.lower().find('docker') != -1:
+ skills[19] += 1
+# scores is going to store the sum of weights of the skills of each job
+scores = []
+scores = [0 for i in range(n)]
+# totalSkills is going to store the number of demanded skills for that job
+totalSkills = []
+totalSkills = [0 for i in range(n)]
+index = 0
+# compute the scores and totalSkills for the database
+for y in array:
+ if y.lower().find('sql') != -1:
+ scores[index] = scores[index] + skills[0]
+ totalSkills[index] +=1
+ if y.lower().find('java') != -1:
+ scores[index] = scores[index] + skills[1]
+ totalSkills[index] +=1
+ if y.lower().find('python') != -1:
+ scores[index] = scores[index] + skills[2]
+ totalSkills[index] +=1
+ if y.lower().find('linux') != -1:
+ scores[index] = scores[index] + skills[3]
+ totalSkills[index] +=1
+ if y.lower().find('javascript') != -1:
+ scores[index] = scores[index] + skills[4]
+ totalSkills[index] +=1
+ if y.lower().find('aws') != -1:
+ scores[index] = scores[index] + skills[5]
+ totalSkills[index] +=1
+ if y.lower().find('c++') != -1:
+ scores[index] = scores[index] + skills[6]
+ totalSkills[index] +=1
+ if y.lower().find('c') != -1:
+ scores[index] = scores[index] + skills[7]
+ totalSkills[index] +=1
+ if y.lower().find('c#') != -1:
+ scores[index] = scores[index] + skills[8]
+ totalSkills[index] +=1
+ if y.lower().find('.net') != -1:
+ scores[index] = scores[index] + skills[9]
+ totalSkills[index] +=1
+ if y.lower().find('oracle') != -1:
+ scores[index] = scores[index] + skills[10]
+ totalSkills[index] +=1
+ if y.lower().find('html') != -1:
+ scores[index] = scores[index] + skills[11]
+ totalSkills[index] +=1
+ if y.lower().find('scrum') != -1:
+ scores[index] = scores[index] + skills[12]
+ totalSkills[index] +=1
+ if y.lower().find('git') != -1:
+ scores[index] = scores[index] + skills[13]
+ totalSkills[index] +=1
+ if y.lower().find('css') != -1:
+ scores[index] = scores[index] + skills[14]
+ totalSkills[index] +=1
+ if y.lower().find('machine learning') != -1:
+ scores[index] = scores[index] + skills[15]
+ totalSkills[index] +=1
+ if y.lower().find('azure') != -1:
+ scores[index] = scores[index] + skills[16]
+ totalSkills[index] +=1
+ if y.lower().find('unix') != -1:
+ scores[index] = scores[index] + skills[17]
+ totalSkills[index] +=1
+ if y.lower().find('sql server') != -1:
+ scores[index] = scores[index] + skills[18]
+ totalSkills[index] +=1
+ if y.lower().find('docker') != -1:
+ scores[index] = scores[index] + skills[19]
+ totalSkills[index] +=1
+ index +=1
+df['scores'] = scores
+df['number_skills'] = totalSkills
+df.info()
+print(df.isnull().sum())
+# Inspect statistical information about the data set 
+print(df.describe())
+# Set X variable
+X = df['scores']
+# Set Y varaible
+Y = df['number_skills']
+# plot the scores vs number_skills to visualize it
+#plt.scatter(X,Y)
+# We first use the min-max scalar to normalize our data. The min-max scaler takes
+# the minimum and maximum values of a given column and uses them to scale all values between 0 and 
+1.
+scaler = MinMaxScaler()
+scaler.fit(df[['scores']])
+#df['scores'] = scaler.transform(df[['scores']])
+scaler.fit(df[['number_skills']])
+#df['number_skills'] = scaler.transform(df[['number_skills']])
+# Plot the data to visualize the distribution.
+#plt.scatter(df.scores,df['number_skills'])
+# Use the elbow method to find the right number of clusters K.
+sse = []
+k_rng = range(1,10)
+for K in k_rng:
+ km1 = KMeans(n_clusters=K)
+ km1.fit(df[['scores','number_skills']])
+ sse.append(km1.inertia_)
+# Plot SSE for different values of K to find the optimal K
+#plt.xlabel('K')
+#plt.ylabel('Sum of squared error')
+#plt.plot(k_rng,sse)
+# based on the SSE vs K plot the most optimal k is 2
+# We first use the min-max scalar to normalize our data. The min-max scaler takes
+# the minimum and maximum values of a given column and uses them to scale all values between 0 and 
+1.
+scaler = MinMaxScaler()
+scaler.fit(df[['scores']])
+df['scores'] = scaler.transform(df[['scores']])
+scaler.fit(df[['number_skills']])
+df['number_skills'] = scaler.transform(df[['number_skills']])
+# Define a KMeans object with the value of k set to 2. We'll call this object km. 
+km2 = KMeans(n_clusters=2)
+# Predict the data set excluding the index column. 
+# Save the prediction in an array and call it y_predicted
+y_predicted = km2.fit_predict(df[['scores','number_skills']])
+# Add a column to the data frame to store the predicted cluster ID of each element
+df['cluster'] = y_predicted
+# Define the two data frames, df1, df2 each belonging to one of the two clusters
+df1 = df[df.cluster==0]
+df2 = df[df.cluster==1]
+# Plot the data frames with different colors to differentiate them
+plt.scatter(df1['scores'], df1['number_skills'], color='green')
+plt.scatter(df2['scores'], df2['number_skills'], color='red')
+# Define the labels on the x and y axes
+plt.xlabel('scores')
+plt.ylabel('number_skills')
+# Plot the centroids to the plot
+plt.scatter(km2.cluster_centers_[:,0],km2.cluster_centers_[:,1],color='orange',marker='*',label='centroi
+d')
+# Plot the legend
+plt.legend()
+print(df)
