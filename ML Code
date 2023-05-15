@@ -7,33 +7,43 @@ from matplotlib import pyplot as plt
 %matplotlib inline
 import matplotlib.pyplot as plt # for data visualization
 from sklearn.metrics import silhouette_score
+
 # TODO:: load your .csv dataset into a dataframe
 df = pd.read_csv("MLProject/dice_com-job_us_sample2.csv")
+
 # Drop the three empty columns from the data 
 df.drop(['advertiserurl', 'company', 'employmenttype_jobstatus', 'jobid', 'postdate', 'shift', 'site_name', 
 'skills', 'uniq_id'], axis=1, inplace=True)
+
 # TODO:: Check the summary again to see if there are any redundant columns remaining
 df.info()
+
 # Inspect statistical information about the data set 
 print(df.describe())
+
 # TODO::Get the categorical variable you want to generate a pie chart for
 titles = df['jobtitle']
 descriptions = df['jobdescription']
 locations = df['joblocation_address']
+
 #TODO:: write code to view how many different types of labels there are in song
 n = df.shape[0]
 print(n)
+
 # TODO::List the set of unique values for this variable
 # print(titles.unique())
 # print(descriptions.unique())
 # print(locations.unique())
+
 array = df['jobtitle'].astype(str).to_numpy()
+
 # Create an array of zeroes where each element correspond to the
 # number of jobs asking for that element skills
 # the elements of the array refer to SQL, Java, Python, Linux, JavaScript
 # AWS, C++, C, C#, .NET, Oracle, HTML, Scrum, Git, CSS, ML, Azure, Unix, SQL server,
 # Docker
 skills = np.zeros(20)
+
 # Store the number of repeatition of each skill in the database and that is going to
 # present the wieght of the skills. Since it was repeated many times it means it must have
 # higher wieght
@@ -78,13 +88,16 @@ for x in array:
  skills[18] += 1
  if x.lower().find('docker') != -1:
  skills[19] += 1
+
 # scores is going to store the sum of weights of the skills of each job
 scores = []
 scores = [0 for i in range(n)]
+
 # totalSkills is going to store the number of demanded skills for that job
 totalSkills = []
 totalSkills = [0 for i in range(n)]
 index = 0
+
 # compute the scores and totalSkills for the database
 for y in array:
  if y.lower().find('sql') != -1:
@@ -147,29 +160,41 @@ for y in array:
  if y.lower().find('docker') != -1:
  scores[index] = scores[index] + skills[19]
  totalSkills[index] +=1
+ 
  index +=1
+
 df['scores'] = scores
 df['number_skills'] = totalSkills
 df.info()
 print(df.isnull().sum())
+
 # Inspect statistical information about the data set 
 print(df.describe())
+
 # Set X variable
 X = df['scores']
+
 # Set Y varaible
 Y = df['number_skills']
+
 # plot the scores vs number_skills to visualize it
 #plt.scatter(X,Y)
+
 # We first use the min-max scalar to normalize our data. The min-max scaler takes
 # the minimum and maximum values of a given column and uses them to scale all values between 0 and 
 1.
 scaler = MinMaxScaler()
 scaler.fit(df[['scores']])
+
 #df['scores'] = scaler.transform(df[['scores']])
+
 scaler.fit(df[['number_skills']])
+
 #df['number_skills'] = scaler.transform(df[['number_skills']])
+
 # Plot the data to visualize the distribution.
 #plt.scatter(df.scores,df['number_skills'])
+
 # Use the elbow method to find the right number of clusters K.
 sse = []
 k_rng = range(1,10)
@@ -177,10 +202,12 @@ for K in k_rng:
  km1 = KMeans(n_clusters=K)
  km1.fit(df[['scores','number_skills']])
  sse.append(km1.inertia_)
+
 # Plot SSE for different values of K to find the optimal K
 #plt.xlabel('K')
 #plt.ylabel('Sum of squared error')
 #plt.plot(k_rng,sse)
+
 # based on the SSE vs K plot the most optimal k is 2
 # We first use the min-max scalar to normalize our data. The min-max scaler takes
 # the minimum and maximum values of a given column and uses them to scale all values between 0 and 
@@ -190,25 +217,34 @@ scaler.fit(df[['scores']])
 df['scores'] = scaler.transform(df[['scores']])
 scaler.fit(df[['number_skills']])
 df['number_skills'] = scaler.transform(df[['number_skills']])
+
 # Define a KMeans object with the value of k set to 2. We'll call this object km. 
 km2 = KMeans(n_clusters=2)
+
 # Predict the data set excluding the index column. 
 # Save the prediction in an array and call it y_predicted
 y_predicted = km2.fit_predict(df[['scores','number_skills']])
+
 # Add a column to the data frame to store the predicted cluster ID of each element
 df['cluster'] = y_predicted
+
 # Define the two data frames, df1, df2 each belonging to one of the two clusters
 df1 = df[df.cluster==0]
 df2 = df[df.cluster==1]
+
 # Plot the data frames with different colors to differentiate them
 plt.scatter(df1['scores'], df1['number_skills'], color='green')
 plt.scatter(df2['scores'], df2['number_skills'], color='red')
+
 # Define the labels on the x and y axes
 plt.xlabel('scores')
 plt.ylabel('number_skills')
+
 # Plot the centroids to the plot
 plt.scatter(km2.cluster_centers_[:,0],km2.cluster_centers_[:,1],color='orange',marker='*',label='centroi
 d')
+
 # Plot the legend
 plt.legend()
+
 print(df)
